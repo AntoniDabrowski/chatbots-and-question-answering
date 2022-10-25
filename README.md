@@ -2,7 +2,8 @@
 A machine translation model based on OpenNMT
 
 
-Task description:
+## Task description:
+
 Train your own Polish-English machine translation system, and compare its quality with the one from HuggingFace (https://huggingface.co/models). You have to create the parallel corpus of pairs of sentences from these languages, choose the architecture (consider using OpenNMT), and train the model.
 
 You can use any data to train the model. Consider the following sources:
