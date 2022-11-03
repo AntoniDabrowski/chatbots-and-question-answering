@@ -1,0 +1,6 @@
+corpora_pol_en/all_joint_together/src-test.txt
+corpora_pol_en/all_joint_together/src-train.txt
+corpora_pol_en/all_joint_together/src-val.txt
+corpora_pol_en/all_joint_together/tgt-test.txt
+corpora_pol_en/all_joint_together/tgt-train.txt
+corpora_pol_en/all_joint_together/tgt-val.txt
