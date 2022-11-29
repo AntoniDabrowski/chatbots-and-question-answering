@@ -1,12 +1,11 @@
 from transformers import pipeline
 import dl_translate as dlt
-import wikipedia as wiki
 import torch
 import re
 import numpy as np
 from tqdm.auto import tqdm
 from datetime import datetime
-from create_query import create_query
+from get_articles import get_articles
 
 # Translation
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -20,31 +19,6 @@ nlp = pipeline('question-answering', model=model_name, tokenizer=model_name)
 
 def pol_en_translation(sentence):
     return mt.translate(sentence, source=dlt.lang.POLISH, target=dlt.lang.ENGLISH)
-
-
-def wiki_ranking(question, k=5, verbose=False):
-    query = create_query(question, 'en')
-    results = wiki.search(query)
-    ranking = []
-    for i in range(min(k, len(results))):
-        try:
-            if verbose:
-                print(i + 1, results[i])
-            article = wiki.page(results[i]).content
-
-            # preprocessing: wikipedia contain many specific information in brackets
-            # those were mostly useless for QA and model behave strangely on them
-            # therefore I removed them
-            article = re.sub("\(.*?\)", "", article)
-            if verbose:
-                print(article[:200])
-
-            ranking.append(article[:1000])
-        except:
-            if verbose:
-                print("No matching article")
-    return ranking
-
 
 def QA(question, articles):
     answers = []
@@ -74,7 +48,7 @@ def pipeline(question_pl, k=5, verbose=False):
     if verbose:
         print(question_en)
 
-    relevant_articles = wiki_ranking(question_en, k, verbose)
+    relevant_articles = get_articles(question_en, k, verbose)
     answers = QA(question_en, relevant_articles)
 
     if verbose:
