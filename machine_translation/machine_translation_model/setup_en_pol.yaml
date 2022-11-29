@@ -1,0 +1,32 @@
+# toy_en_de.yaml
+
+## Where the samples will be written
+save_data: run_en_pol/example
+## Where the vocab(s) will be written
+src_vocab: run_en_pol/example.vocab.src
+tgt_vocab: run_en_pol/example.vocab.tgt
+# Prevent overwriting existing files in the folder
+overwrite: False
+
+# Corpus opts:
+data:
+    corpus_1:
+        path_src: preprocessed/en-train.txt
+        path_tgt: preprocessed/pol-train.txt
+    valid:
+        path_src: preprocessed/en-val.txt
+        path_tgt: preprocessed/pol-val.txt
+
+# Vocabulary files that were just created
+src_vocab: run_en_pol/example.vocab.src
+tgt_vocab: run_en_pol/example.vocab.tgt
+
+# Train on a single GPU
+world_size: 1
+gpu_ranks: [0]
+
+# Where to save the checkpoints
+save_model: run_en_pol/model
+save_checkpoint_steps: 5000
+train_steps: 25000
+valid_steps: 5000
