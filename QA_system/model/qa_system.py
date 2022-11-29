@@ -6,6 +6,7 @@ import re
 import numpy as np
 from tqdm.auto import tqdm
 from datetime import datetime
+from create_query import create_query
 
 # Translation
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -22,7 +23,8 @@ def pol_en_translation(sentence):
 
 
 def wiki_ranking(question, k=5, verbose=False):
-    results = wiki.search(question)
+    query = create_query(question, 'en')
+    results = wiki.search(query)
     ranking = []
     for i in range(min(k, len(results))):
         try:
@@ -102,9 +104,9 @@ def run_test():
 
 
 question = 'Jak nazywa się pierwsza litera alfabetu greckiego?'
-while True:
-    print(pipeline(question, k=5, verbose=True))
-    question = input()
+# while True:
+print(pipeline(question, k=5, verbose=True))
+    # question = input()
 
 
 # run_test()
