@@ -14,12 +14,14 @@ nlp = pipeline('question-answering', model=model_name, tokenizer=model_name)
 
 def QA(question, articles):
     answers = []
+    # t = datetime.now()
     for context in articles:
         QA_input = {
             'question': question,
             'context': context
         }
         answers.append(nlp(QA_input))
+    # print("QA time =", datetime.now() - t)
     return answers
 
 def choose_ans(answers):
@@ -45,7 +47,7 @@ def answer_questions(questions, verbose, verbose_pipeline):
     answers = []
     for question in tqdm(questions):
         try:
-            answer = pipeline(question,k=7,verbose=verbose_pipeline)
+            answer = pipeline(question,k=12,verbose=verbose_pipeline)
             if verbose:
                 print(f'{question}, {answer}')
             answers.append(answer)
