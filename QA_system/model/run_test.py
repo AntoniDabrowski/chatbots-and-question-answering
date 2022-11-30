@@ -8,8 +8,8 @@ from check_answers import check_answers
     # question = input()
 
 # Makes predictions for a whole dataset
-q = [line for line in open(r'../data/questions.txt',encoding='UTF-8')][:1]
-answers = answer_questions(q)
+q = [line for line in open(r'../data/questions.txt',encoding='UTF-8')]
+answers = answer_questions(q, True, False)
 
 predictions = '\n'.join(answers)
 time = datetime.now().strftime("%d_%m_%Y__%H_%M")

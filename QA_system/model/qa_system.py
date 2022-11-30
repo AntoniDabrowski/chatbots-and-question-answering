@@ -3,8 +3,8 @@ import re
 import numpy as np
 from tqdm.auto import tqdm
 from datetime import datetime
-from get_articles import get_articles
 import translation
+from get_articles import get_articles
 
 
 # Question Answering
@@ -23,18 +23,14 @@ def QA(question, articles):
     return answers
 
 def choose_ans(answers):
+    if len(answers) == 0:
+        return ''
     scores = [answer['score'] for answer in answers]
     ans = [answer['answer'] for answer in answers]
     return ans[np.argmax(scores)]
 
 def pipeline(question_pl, k=5, verbose=False):
-    question_en = translation.pol_en(question_pl)
-    # Use deepl model to check the improvement
-
-    if verbose:
-        print(question_en)
-
-    relevant_articles = get_articles(question_en, k, verbose)
+    [relevant_articles, question_en] = get_articles(question_pl, k, verbose)
     answers = QA(question_en, relevant_articles)
 
     if verbose:
@@ -45,12 +41,13 @@ def pipeline(question_pl, k=5, verbose=False):
     answer_pl = translation.en_pol(answer_en)
     return answer_pl
 
-def answer_questions(questions):
+def answer_questions(questions, verbose, verbose_pipeline):
     answers = []
     for question in tqdm(questions):
         try:
-            answer = pipeline(question,k=7,verbose=False)
-            print(f'{question}, {answer}')
+            answer = pipeline(question,k=7,verbose=verbose_pipeline)
+            if verbose:
+                print(f'{question}, {answer}')
             answers.append(answer)
         except:
             answers.append('')

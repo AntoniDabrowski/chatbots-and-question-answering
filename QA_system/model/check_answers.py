@@ -32,7 +32,6 @@ def check_answers(answers_filename):
     score = 0.0
     matched_id = []
     for i, (ans, cor) in tqdm(enumerate(zip(found_answers, correct_answers))):
-        print(i, ans, cor)
         if match(ans, cor):
             score += 1
             matched_id.append(i)
