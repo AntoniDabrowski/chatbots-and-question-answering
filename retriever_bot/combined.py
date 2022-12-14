@@ -1,0 +1,72 @@
+import morfeusz2
+import pickle
+import colorama
+from termcolor import colored
+import numpy as np
+from gensim.models import KeyedVectors
+from sparse_retriever import get_ranking, print_result
+from time import time
+from dense_retriever import article_score
+
+
+if __name__ == '__main__':
+    # Initialization
+    t_previous = time()
+    print(f'Loading models and databases...\nExecution time: 0.0s')
+    morf = morfeusz2.Morfeusz()
+    colorama.init(autoreset=True)
+    w2v = KeyedVectors.load("word2vec/word2vec_100_3_polish.bin")
+
+    path = r"C:\Users\user\Studia\Semestr VI\Eksploracja tekstów\Text_mining\dane\wikipedyjka"
+    titles = pickle.load(open(path+r'\id_titles.pickle',"rb"))
+    body = pickle.load(open(path+r'\id_body.pickle', "rb"))
+    odwrotny_indeks_titles = pickle.load(open(path+r'\odwrotny_indeks_titles.pickle',"rb"))
+    odwrotny_indeks_body = pickle.load(open(path+r'\odwrotny_indeks_body.pickle',"rb"))
+    odwrotny_indeks_lematyczny_titles = pickle.load(open(path+r'\odwrotny_indeks_lematyczny_titles.pickle',"rb"))
+    odwrotny_indeks_lematyczny_body = pickle.load(open(path+r'\odwrotny_indeks_lematyczny_body.pickle',"rb"))
+
+    data = (odwrotny_indeks_titles, odwrotny_indeks_body,
+            odwrotny_indeks_lematyczny_titles, odwrotny_indeks_lematyczny_body, body, morf)
+
+
+    matches_importance = {'match_in_title': 4,
+                          'lemma_match_in_title': 3,
+                          'match_in_body': 6,
+                          'lemma_match_in_body': 5}
+
+    # QA loop
+    verbose = True
+    "Jak nazywa się pierwsza litera alfabetu greckiego?"
+    k = 5
+    print(f"Done! You can ask questions!\nExecution time:{(time()-t_previous):.2f}s")
+    while True:
+        # Logging time
+        t_previous = time()
+
+
+        query = input()
+
+        ranking, matches = get_ranking(query, data, matches_importance, log_matches=True)
+
+        # choosing best five results
+        sorted_results = sorted(ranking.items(), key=lambda item: item[1], reverse=True)
+        if verbose:
+            for article_id, relevance in sorted_results[:k]:
+                # if relevance > 0.6:
+                print_result(article_id, titles, body, relevance, matches, morf)
+            print("Matching:" +
+                  colored('\nPERFECT MATCH IN TITLE', 'red') +
+                  colored('\nLEMMA MATCH IN TITLE', 'magenta') +
+                  colored('\nPERFECT MATCH IN ARTICLE BODY', 'blue') +
+                  colored('\nLEMMA MATCH IN ARTICLE BODY', 'yellow'))
+            print(f'Execution time: {time()-t_previous}s')
+
+        bodies = [body[article_id] for article_id, _ in sorted_results[:k]]
+
+        sparse_scores = np.array([score for _, score in sorted_results[:k]])
+        dense_scores = np.array([article_score(b, query, w2v) for b in bodies])
+
+        final_score = sparse_scores * dense_scores
+        winning_id, _ = sorted_results[np.argmax(final_score)]
+
+        print(titles[winning_id])
