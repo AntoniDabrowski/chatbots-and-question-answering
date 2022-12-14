@@ -87,14 +87,13 @@ def consider_id(ranking):
 
 def normalization(ranking, body, matches_importance):
     for article_id, v in ranking.items():
-        ranking[article_id] = v / (len(body[article_id].split()) + matches_importance.get('normalization', 150))
+        ranking[article_id] = v / (len(body[article_id].split()) + matches_importance.get('normalization', 370))
 
 
 def get_ranking(query, data, matches_importance={}, log_matches=False):
     odwrotny_indeks_titles, odwrotny_indeks_body, odwrotny_indeks_lematyczny_titles, odwrotny_indeks_lematyczny_body, body, morf = data
 
     # logging matches
-    # Maybe I should use sets instead of lists !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     body_match = dd(set)
     title_match = dd(set)
     lemma_title_match = dd(set)
@@ -158,7 +157,6 @@ def print_result(article_id, titles, bodies, relevance, matches, morf):
 
     print(new_body)
 
-
 if __name__ == '__main__':
     morf = morfeusz2.Morfeusz()
     colorama.init(autoreset=True)
@@ -176,8 +174,8 @@ if __name__ == '__main__':
 
     matches_importance = {'match_in_title': 9,
                           'lemma_match_in_title': 5,
-                          'match_in_body': 3,
-                          'lemma_match_in_body': 2}
+                          'match_in_body': 2,
+                          'lemma_match_in_body': 1}
 
     print("Możesz zadawać pytania.")
     while True:
@@ -188,7 +186,7 @@ if __name__ == '__main__':
 
         # choosing best five results
         sorted_results = sorted(ranking.items(), key=lambda item: item[1], reverse=True)
-        for article_id, relevance in sorted_results[:100]:
+        for article_id, relevance in sorted_results[:300]:
             # if relevance > 0.6:
             print_result(article_id, titles, body, relevance, matches, morf)
         print("Matching:" +
